@@ -1,1 +1,29 @@
-Root File System
+Android RFS (Root File System)
+ - cache 
+ 
+ - data : application data and download data...
+ 
+ - dev : char, block,, devices
+ 
+ - proc : kernel, process information.
+ 
+ - sys : device driver information.
+ 
+ - sbin : ueventd exec files.
+ 
+ - sdcard : link file. (/mnt/sdcard/)
+ 
+ - system
+   1) app : default APK folder.
+   
+   2) bin : deamon, bin, toolbox..files.
+   
+   3) framework : java libraries.
+   
+   4) lib : Native libraries (*.so)
+
+   6) hw : HAL modules (*.so)
+   
+   7) modules : Kernel Modules. (*.ko)
+   
+   8) vendor : vendor's HAL (*.so)
