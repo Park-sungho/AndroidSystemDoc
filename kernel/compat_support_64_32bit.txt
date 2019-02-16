@@ -1,0 +1,53 @@
+
+IoCTL needs to set 32bit and 64bit or both as the below in the 64bit kernel.
+
+There're failed to use ioctl, when the kernel is 64bit and HAL or native apps are 32bit.
+so, If you want to use the 32bit native or HAL apps than the device driver of kernel must be use the compat_ioctl.
+
+How to do use the ioctl suport for both 32bit and 64bit.
+
+ 1) Define the defconfig as the below.
+   CONFIG_COMPAT=y
+ 
+ 2) Implement the compat_ioctl as the below.
+    * compat_ioctl: called by the ioctl system call when 32 bit system calls
+    
+    static const struct file_operations oem_device_ctrl_fops =
+    {
+     .owner            = THIS_MODULE,
+     .open             = oem_device_ctrl_open,
+     .release          = oem_device_ctrl_release,
+     .unlocked_ioctl   = oem_device_ctrl_ioctl,
+#ifdef CONFIG_COMPAT
+     .compat_ioctl     = oem_device_ctrl_ioctl,
+#endif
+    };
+
+    static long oem_device_ctrl_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+    {
+      int ret = 0;
+
+      switch(cmd)
+      {
+      case OEM_SET_DEV_FUNC1_WRITE:
+      {
+         void __user *argp = (void __user *)arg;
+         struct oem_device_ctrl *dev_ctrl;
+        
+        dev_ctrl = kmalloc(sizeof(struct oem_device_ctrl),GFP_KERNEL);
+
+        mutex_lock(&oem_lock);
+#ifdef CONFIG_COMPAT
+        ret = copy_from_user(dev_ctrl, compat_ptr(argp), sizeof(struct oem_device_ctrl));
+#else
+        ret = copy_from_user(dev_ctrl, argp, sizeof(struct oem_device_ctrl));
+#endif
+        mutex_unlock(&oem_lock);
+        
+        oem_device_control(dev_ctrl);
+
+        kfree(spi_dac_info);
+        break;
+    }
+    ...
+
