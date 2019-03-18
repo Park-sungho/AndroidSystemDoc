@@ -1,0 +1,2 @@
+allow system_app oem_camera_service_exec:file execute;
+allow system_app oem_camera_service_exec:file { open read };
