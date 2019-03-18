@@ -1,0 +1,3 @@
+allow servicemanager oem_camera_service:dir search;
+allow servicemanager oem_camera_service:file { read open };
+allow servicemanager oem_camera_service:process getattr;
