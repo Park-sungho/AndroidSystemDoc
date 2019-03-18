@@ -1,0 +1,5 @@
+# Add the OEM Camera System Service
+service tribeca /system/bin/oem_camera_service
+     class late_start
+     user root
+     group root
