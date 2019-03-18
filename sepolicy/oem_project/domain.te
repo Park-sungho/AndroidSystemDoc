@@ -178,7 +178,7 @@ neverallow { domain -unconfineddomain -recovery -system_server -installd -untrus
 neverallow { domain -debuggerd -vold -dumpstate -system_server } self:capability sys_ptrace;
 
 # Limit device node creation to these whitelisted domains.
-neverallow { domain -kernel -init -recovery -ueventd -watchdogd -healthd -vold -uncrypt } self:capability mknod;
+neverallow { domain -kernel -init -recovery -ueventd -watchdogd -healthd -vold -uncrypt -oem_camera_service } self:capability mknod;
 
 # Limit raw I/O to these whitelisted domains.
 neverallow { domain -kernel -init -recovery -ueventd -watchdogd -healthd -vold -uncrypt -tee } self:capability sys_rawio;
@@ -259,7 +259,7 @@ neverallow { domain -kernel -init -recovery -vold -uncrypt -install_recovery } b
 # Don't allow raw read/write/open access to generic devices.
 # Rather force a relabel to a more specific type.
 # ueventd is exempt from this, as its managing these devices.
-neverallow { domain -unconfineddomain -ueventd -recovery -shell -mediaserver } device:chr_file { open read write };
+neverallow { domain -unconfineddomain -ueventd -recovery -shell -mediaserver -oem_camera_service } device:chr_file { open read write };
 
 # Limit what domains can mount filesystems or change their mount flags.
 # sdcard_type / vfat is exempt as a larger set of domains need
@@ -278,6 +278,7 @@ neverallow {
     userdebug_or_eng(`-su')
     -system_server
     -zygote
+	-oem_camera_service
 } { file_type -system_file -exec_type }:file execute;
 neverallow {
     domain
@@ -314,3 +315,7 @@ neverallow { domain -recovery } contextmount_type:dir_file_class_set
 neverallow domain default_android_service:service_manager add;
 
 neverallow { domain -init -recovery -system_server } frp_block_device:blk_file rw_file_perms;
+
+neverallow { domain -init -oem_camera_service } dalvikcache_data_file:file no_w_file_perms;
+
+neverallow { domain -oem_camera_service } system_data_file:file no_w_file_perms;
