@@ -1,0 +1,1 @@
+allow system_server oem_camera_service:binder transfer;
