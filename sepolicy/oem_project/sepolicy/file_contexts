@@ -1,0 +1,2 @@
+# OEM Camera files in /system
+/system/bin/oem_camera_service    u:object_r:oem_camera_service_exec:s0
