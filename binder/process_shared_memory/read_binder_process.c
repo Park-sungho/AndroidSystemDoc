@@ -30,5 +30,5 @@ void main(int argc, char **argv) {
         printf("Input Value : %s\n", buffer);
     }
     while (getchar());
-    return 0;
+    return;
 }
