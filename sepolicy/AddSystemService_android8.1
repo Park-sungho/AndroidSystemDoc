@@ -1,0 +1,23 @@
+There are several senarios in Android SeLinux.
+So you need to choose your purpose policy.
+
+· system/sepolicy/public
+· system/sepolicy/private
+· system/sepolicy/vendor
+· device/manufacturer/device-name/sepolicy
+
+If you want to add the system service you need to do the below.
+The below is just example code for SElinux.
+
+Check the policy
+In SELinux there are neverallow in system/domain.te.
+so if you service need to use the system resource like GPIO,.. than you need to add your service into domain.te for excepting.
+
+My service is vendor service and this service needs very critical security.
+than you must add your service into system/sepolicy/
+
+[condition]
+- service name: mydev-service
+- service app: system/bin/mydev-service
+
+1. 
