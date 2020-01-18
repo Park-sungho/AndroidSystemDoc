@@ -1,1 +1,12 @@
 Add the MyDeviceSystemService
+
+1. init.rc
+  : If you want to add your service than use the "class late_start".
+    Because if your service started before the AOSP system service is not running yet.
+    than your service is running but there're no service in the "service list" of AOSP.
+    You can check the AOSP service lists by using the "adb shell service list".
+  [init.rc]
+  service mydev-service /system/bin/mydev-service
+      class late_start
+      user root
+      group root
