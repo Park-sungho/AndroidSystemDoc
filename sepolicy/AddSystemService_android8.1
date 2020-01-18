@@ -20,4 +20,68 @@ than you must add your service into system/sepolicy/
 - service name: mydev-service
 - service app: system/bin/mydev-service
 
-1. 
+[system/sepolicy]
+1. add the system permission.
+  ./system/sepolicy/prebuilts/api/26.0/nonplat_sepolicy.cil
+    (typeattributeset file_type (bootanim_exec_26_0 ... mydev-service_exec_26_0))
+    (typeattributeset exec_type (bootanim_exec_26_0 ... mydev-service_exec_26_0))
+    (typeattributeset service_manager_type (audioserver_service_26_0 ... mydev-service_service_26_0))
+    ...
+    (typeattribute mydev-service_26_0)
+    (roletype object_r mydev-service_26_0)
+    (typeattribute mydev-service_exec_26_0)
+    (roletype object_r mydev-service_exec_26_0)
+  ./system/sepolicy/prebuilts/api/26.0/private/file_contexts
+    /system/bin/mydev-service    u:object_r:mydev-service_exec:s0
+  ./system/sepolicy/private/compat/26.0/26.0.cil
+    (typeattributeset mydev-service_service_26_0 (mydev-service_service))
+    (typeattributeset mydev-service_exec_26_0 (mydev-service_exec))
+  ./system/sepolicy/private/service_contexts
+    com.mydev-service.IMyDevService          u:object_r:mydev-service_service:s0
+  ./system/sepolicy/private/file_contexts
+    /system/bin/mydev-service    u:object_r:mydev-service_exec:s0
+  ./system/sepolicy/public/domain.te
+    neverallow {
+      domain
+      -adbd
+      -appdomain
+      -system_server
+      -mydev-service   # If your service needs this permissin than add your service.
+      ...
+    } shell_data_file:dir { open search };
+   ./system/sepolicy/prebuilts/api/26.0/public/mydev-service.te (Add)
+      type mydev-service, domain;
+      type mydev-service_exec, exec_type, file_type;
+      typeattribute mydev-service appdomain; #coredomain;
+
+      binder_use(mydev-service)
+      binder_call(mydev-service, system_server)
+      binder_call(mydev-service, appdomain)
+      binder_service(mydev-service)
+
+      allow mydev-service self:socket create_socket_perms_no_ioctl;
+      allow mydev-service self:capability { setuid setgid net_raw chown net_bind_service sys_module setgid net_admin };
+   ./system/sepolicy/public/mydev-service.te (Add)
+   ./system/sepolicy/vendor/mydev-service.te (Add)
+      type mydev-service, domain;
+      type mydev-service_exec, exec_type, file_type;
+      typeattribute mydev-service appdomain; #coredomain;
+
+      binder_use(mydev-service)
+      binder_call(mydev-service, system_server)
+      binder_call(mydev-service, appdomain)
+      binder_service(mydev-service)
+
+      allow mydev-service mydev-service_service:service_manager add;
+      allow mydev-service default_android_service:service_manager add;
+      allow mydev-service self:socket create_socket_perms_no_ioctl;
+      allow mydev-service self:capability { setuid setgid net_raw chown net_bind_service sys_module setgid net_admin };
+
+      allow mydev-service sysfs:file { write read open };
+      allow mydev-service shell_data_file:dir { search };
+      allow mydev-service shell_exec:file { execute execute_no_trans read open };
+   
+   2. apply permission for your apps.     
+    ./device/{SoC}/sepolicy/{model}/mydev-service.te
+     #allow com.sample_app mydev-service:file { write read open };
+     allow com.sample_app default_android_service:service_manager find;
